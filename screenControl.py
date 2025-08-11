@@ -11,7 +11,7 @@ def login(username, password):
     if username in users_data:
         user_info = users_data[username]
         if user_info["password"] == password:
-            return User(username, password, user_info["balance"], active_bets = user_info["bet_keys"])    
+            return User(username, password, rank = user_info["rank"], take_keys = user_info["take_keys"])    
         else:
             print("Incorrect password.")
             return None

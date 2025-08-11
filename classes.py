@@ -17,12 +17,14 @@ class User:
             "take_keys": self.take_keys
             }
         }
+        
     
 
 class Take:
 
-    def __init__(self, key, user1, user2, winner, loser):
+    def __init__(self, key, description, user1, user2, winner, loser):
         self.key = str(key)
+        self.description = description
         self.user1 = user1
         self.user2 = user2
         self.winner = winner
@@ -30,10 +32,11 @@ class Take:
 
     def toJson(self):
         return {
-            self.key: {
+                "key": self.key,
+                "description": self.description,
                 "user1": self.user1,
                 "user2": self.user2,
                 "winner": self.winner,
                 "loser": self.loser
-            }
+            
         }
