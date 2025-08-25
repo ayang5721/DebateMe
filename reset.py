@@ -10,9 +10,18 @@ if input().strip().lower() == "yes":
 
 print ("This will reset all Takes. Are you sure? (yes/no)")
 if input().strip().lower() == "yes":
+    with open ("Takes.json", "r") as f:
+        takes_data = json.load(f)
+
+    for take in takes_data.values():
+        debate_path = f"{take['key']}_debate.jsonl"
+        if os.path.exists(debate_path):
+            os.remove(debate_path)
+    
     if os.path.exists("Takes.json"):
         with open("Takes.json", "w") as f:
             f.write("")
+
         print("All takes have been reset.")
 
     if os.path.exists("Users.json") and os.path.getsize("Users.json") > 0 and os.path.getsize("Takes.json") == 0:

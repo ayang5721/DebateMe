@@ -1,0 +1,14 @@
+{
+    "a": {
+        "username": "a",
+        "password": "a",
+        "rank": 0,
+        "take_keys": []
+    },
+    "b": {
+        "username": "b",
+        "password": "b",
+        "rank": 0,
+        "take_keys": []
+    }
+}

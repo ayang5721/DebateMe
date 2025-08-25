@@ -3,10 +3,9 @@ import numpy as np
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 from classes import User, Take
-from screenControl import login, createUser
+from Login import login, createUser
+from debateLogicJsonl import start_debate
 
-
-# FIX CREATE TAKE FUNCTION. CURRENTLY IT ADDS TAKE KEYS TO ALL USERS WHEN JUST ONE USER CREATES A TAKE
 
 def load_data():
     global takes_data, users_data
@@ -81,10 +80,15 @@ def do_create_user():
 # ---- Take Market Functions ----
 
 def accept_take(take_key):
+    print("AT")
     take = takes_data[take_key]
+    print(take_key)
+    print(take)
     if take['user2'] is None:
         take['user2'] = current_user.username
         users_data[current_user.username]['take_keys'].append(take_key)
+        with open("Users.json", "w") as f:
+            json.dump(users_data, f, indent=4)
         with open("Takes.json", "w") as f:
             json.dump(takes_data, f, indent=4)
         messagebox.showinfo("Success", f"You have accepted the take: {take['description']}")
@@ -93,16 +97,18 @@ def accept_take(take_key):
 
     
 def enter_take_market():
+    print("TM")
     for widget in root.winfo_children():
         widget.destroy()
     
     tk.Label(root, text="Available Takes", font=("Arial", 16)).pack(pady=10)
     
     for take in takes_data.values():
-        if take['user1'] != current_user.username and take['user2'] == None:
+        print(take)
+        if take['user1'] != current_user.username and take['user2'] is None:
             info = f"{take['description']} (User: {take['user1']})"
             tk.Label(root, text=info).pack()
-            tk.Button(root, text="Accept Take", command=lambda k=take: accept_take(take['key'])).pack(pady=5)
+            tk.Button(root, text="Accept Take", command=lambda k=take: accept_take(k['key'])).pack(pady=5)
 
     tk.Button(root, text="Back to Main Menu", command=show_main_menu).pack(pady=20)
 
@@ -135,10 +141,9 @@ def open_create_take_screen():
             new_take = Take(key, event, current_user.username, None, None, None)
     
             print(current_user.username)
-            current_user.take_keys.append(key)  # Add key to current user's take keys
-            
+            users_data[current_user.username]['take_keys'].append(key)  # Add key to current user's take keys
+        
             print(users_data)
-            users_data.update(current_user.toJson())  # Update the user's data in JSON
             with open("Users.json", "w") as f:
                 json.dump(users_data, f, indent=4)
 
@@ -167,13 +172,30 @@ def view_takes():
     
     tk.Label(root, text="My Takes", font=("Arial", 16)).pack(pady=10)
     
-    user_takes = current_user.take_keys
+    user_takes = users_data[current_user.username]['take_keys']
     if not user_takes:
         tk.Label(root, text="You have no takes.").pack()
     else:
         for key in user_takes:
             take = takes_data[key]
-            info = f"{take['description']} - Opponent: {take['user2'] if take['user2'] else 'None'}"
+            opponent = "None"
+            if take['user2']:
+                if take['user1'] == current_user.username:
+                    opponent = take['user2']
+                else:
+                    opponent = take['user1']
+            tk.Button(
+                root,
+                text="Debate",
+                command=lambda k=take: start_debate(
+                    k,
+                    current_user,
+                    root,
+                    on_back=view_takes   # or whatever “back” function you want
+                )
+            ).pack()
+
+            info = f"{take['description']} - Opponent: {opponent}"
             tk.Label(root, text=info).pack()
     
     tk.Button(root, text="Back to Main Menu", command=show_main_menu).pack(pady=20)
