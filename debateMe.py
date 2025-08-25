@@ -6,6 +6,8 @@ from classes import User, Take
 from Login import login, createUser
 from debateLogicJsonl import start_debate
 
+# ADD A WAY TO END DEBATE. ADD RANKED SYSTEM (DEBATE EVAL)
+
 
 def load_data():
     global takes_data, users_data
@@ -178,25 +180,29 @@ def view_takes():
     else:
         for key in user_takes:
             take = takes_data[key]
-            opponent = "None"
+            
             if take['user2']:
                 if take['user1'] == current_user.username:
                     opponent = take['user2']
                 else:
                     opponent = take['user1']
-            tk.Button(
-                root,
-                text="Debate",
-                command=lambda k=take: start_debate(
-                    k,
-                    current_user,
-                    root,
-                    on_back=view_takes   # or whatever “back” function you want
-                )
-            ).pack()
+            else:
+                opponent = None
+
 
             info = f"{take['description']} - Opponent: {opponent}"
-            tk.Label(root, text=info).pack()
+
+            row = tk.Frame(root)
+            row.pack(fill="x", padx=8, pady=4)
+
+            tk.Label(row, text=info, anchor="w").pack(side="left", fill="x", expand=True)
+            if opponent is not None:
+                tk.Button(
+                    row,
+                    text="Debate",
+                    command=lambda k=take: start_debate(k, current_user, root, on_back=view_takes)
+                ).pack(side="right")
+
     
     tk.Button(root, text="Back to Main Menu", command=show_main_menu).pack(pady=20)
 

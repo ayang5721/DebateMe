@@ -3,12 +3,16 @@
         "username": "a",
         "password": "a",
         "rank": 0,
-        "take_keys": []
+        "take_keys": [
+            "96296"
+        ]
     },
     "b": {
         "username": "b",
         "password": "b",
         "rank": 0,
-        "take_keys": []
+        "take_keys": [
+            "96296"
+        ]
     }
 }
